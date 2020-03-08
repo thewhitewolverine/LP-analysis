@@ -1,0 +1,309 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>as2_Q1A</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-10-25"><meta name="DC.source" content="as2_Q1A.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Vowel synthesis</span>
+z = tf(<span class="string">"z"</span>,1/8000);
+fs = 8000;
+f0 = 120;
+f1 = 730;
+f2 = 1090;
+f3 = 2440;
+b1 = 100;
+ts = 1:1/fs:0.5;
+b = exp(-2*b1*pi*(1/fs));
+a1 = -2*exp(-1*b1*pi*(1/fs))*cos(2*pi*f1*(1/fs));
+a2 = -2*exp(-1*b1*pi*(1/fs))*cos(2*pi*f2*(1/fs));
+a3 = -2*exp(-1*b1*pi*(1/fs))*cos(2*pi*f3*(1/fs));
+<span class="comment">%%trans = 1/((1 + c11*z^-1 + c2*z^-2)*(1 + c21*z^-1 + c2*z^-2)*(1 + c31*z^-1 + c2*z^-2));</span>
+<span class="comment">%%imp = impulse(trans, 1:1/fs:0.5);</span>
+inp = pulstran (0:1/fs:0.5, 0:1/f0:0.5, <span class="string">"tripuls"</span>, 0.0001);
+inp = inp*100;
+y = 1:1:4000;
+y = y*0;
+<span class="keyword">for</span> i = 1:1:6
+  y(i) = inp(i);
+<span class="keyword">end</span>
+<span class="keyword">for</span> i = 7:1:3990
+    y(i) = inp(i) - (a1+a2+a3)*y(i-1) - ((a1*a2)+(a1+a2)*a3+3*b)*y(i-2) - (2*b*(a1+a2+a3)+a1*a3*a2)*y(i-3) - (3*b*b+b*(a1*a3+a2*a3+a1*a2))*y(i-4) - (b*b*(a1+a2+a3))*y(i-5) - (b*b*b)*y(i-6);
+<span class="keyword">end</span>
+
+<span class="comment">%Hamming Window</span>
+tham = 30e-3*fs;
+ham = hamming(tham);
+<span class="comment">%%plot(ham);</span>
+x = 1:1:240;
+<span class="keyword">for</span> i = 1:1:240
+  x(i) = ham(i)*y(i+200);
+<span class="keyword">end</span>
+<span class="comment">%</span>
+
+per = 10;
+r = zeros(per, 1);
+r = r*0;
+r0 = 0.0;
+<span class="keyword">for</span> j = 1:1:240
+   r0 = r0 + x(i)*x(i);
+<span class="keyword">end</span>
+<span class="keyword">for</span> i = 1:1:per
+  <span class="keyword">for</span> j = per+1:1:240
+      r(i) = r(i)+ x(j)*x(j-i);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+[a2 e2] = levinson(r, 2);
+[a4 e4] = levinson(r, 4);
+[a6 e6] = levinson(r, 6);
+[a8 e8] = levinson(r, 8);
+[a10 e10] = levinson(r, 10);
+
+<span class="comment">%computing gain</span>
+buf1 = 0.0;
+<span class="keyword">for</span> i= 1:1:per
+  buf1 = buf1 + a10(i)*r(i);
+<span class="keyword">end</span>
+G = r0 - buf1;
+G = sqrt(G);
+
+xh2=zeros(1024,1);
+per=2;
+E=e2;
+ak=a2;
+<span class="keyword">for</span> i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh2(i+1) = E/(abs(ex*ak')).^2;
+<span class="keyword">end</span>
+xh2 = sqrt(xh2);
+
+xh4=zeros(1024, 1);
+per=4;
+E=e4;
+ak=a4;
+<span class="keyword">for</span> i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh4(i+1) = E/(abs(ex*ak')).^2;
+<span class="keyword">end</span>
+xh4 = sqrt(xh4);
+
+xh6=zeros(1024, 1);
+per=6;
+E=e6;
+ak=a6;
+<span class="keyword">for</span> i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh6(i+1) = E/(abs(ex*ak')).^2;
+<span class="keyword">end</span>
+xh6 = sqrt(xh6);
+
+xh8=zeros(1024, 1);
+per=8;
+E=e8;
+ak=a8;
+<span class="keyword">for</span> i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh8(i+1) = E/(abs(ex*ak')).^2;
+<span class="keyword">end</span>
+xh8 = sqrt(xh8);
+
+xh10=zeros(1024, 1);
+per=10;
+E=e10;
+ak=a10;
+<span class="keyword">for</span> i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh10(i+1) = E/(abs(ex(1:10)*ak')).^2;
+<span class="keyword">end</span>
+xh10 = sqrt(xh10);
+fft_a = mag2db(abs(fft(x, 1024)));
+
+figure(1);
+plot((1:1024), [fft_a' mag2db(xh2(1:1024))  (mag2db(xh4(1:1024))) (mag2db(xh6(1:1024))) (mag2db(xh8(1:1024))) (mag2db(xh10(1:1024)))])
+legend({<span class="string">'Synthesized plot'</span>, <span class="string">'p=2'</span>, <span class="string">'p=4'</span>, <span class="string">'p=6'</span>, <span class="string">'p=8'</span>, <span class="string">'p=10'</span>}, <span class="string">'Location'</span>, <span class="string">'SouthEast'</span>)
+</pre><pre class="codeoutput">Warning: Imaginary parts of complex X and/or Y arguments ignored 
+</pre><img vspace="5" hspace="5" src="as2_Q1A_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+%Vowel synthesis
+z = tf("z",1/8000);
+fs = 8000;
+f0 = 120;
+f1 = 730;
+f2 = 1090;
+f3 = 2440;
+b1 = 100;
+ts = 1:1/fs:0.5;
+b = exp(-2*b1*pi*(1/fs));
+a1 = -2*exp(-1*b1*pi*(1/fs))*cos(2*pi*f1*(1/fs));
+a2 = -2*exp(-1*b1*pi*(1/fs))*cos(2*pi*f2*(1/fs));
+a3 = -2*exp(-1*b1*pi*(1/fs))*cos(2*pi*f3*(1/fs));
+%%trans = 1/((1 + c11*z^-1 + c2*z^-2)*(1 + c21*z^-1 + c2*z^-2)*(1 + c31*z^-1 + c2*z^-2));
+%%imp = impulse(trans, 1:1/fs:0.5);
+inp = pulstran (0:1/fs:0.5, 0:1/f0:0.5, "tripuls", 0.0001);
+inp = inp*100;
+y = 1:1:4000;
+y = y*0;
+for i = 1:1:6
+  y(i) = inp(i);
+end
+for i = 7:1:3990
+    y(i) = inp(i) - (a1+a2+a3)*y(i-1) - ((a1*a2)+(a1+a2)*a3+3*b)*y(i-2) - (2*b*(a1+a2+a3)+a1*a3*a2)*y(i-3) - (3*b*b+b*(a1*a3+a2*a3+a1*a2))*y(i-4) - (b*b*(a1+a2+a3))*y(i-5) - (b*b*b)*y(i-6);
+end
+
+%Hamming Window  
+tham = 30e-3*fs;
+ham = hamming(tham);
+%%plot(ham);
+x = 1:1:240;
+for i = 1:1:240
+  x(i) = ham(i)*y(i+200);
+end
+%
+
+per = 10;
+r = zeros(per, 1);
+r = r*0;
+r0 = 0.0;
+for j = 1:1:240
+   r0 = r0 + x(i)*x(i);
+end
+for i = 1:1:per
+  for j = per+1:1:240  
+      r(i) = r(i)+ x(j)*x(j-i);
+    end
+end
+
+[a2 e2] = levinson(r, 2);
+[a4 e4] = levinson(r, 4);
+[a6 e6] = levinson(r, 6);
+[a8 e8] = levinson(r, 8);
+[a10 e10] = levinson(r, 10);
+
+%computing gain
+buf1 = 0.0;
+for i= 1:1:per
+  buf1 = buf1 + a10(i)*r(i);
+end
+G = r0 - buf1;
+G = sqrt(G);
+
+xh2=zeros(1024,1);
+per=2;
+E=e2;
+ak=a2;
+for i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh2(i+1) = E/(abs(ex*ak')).^2;
+end
+xh2 = sqrt(xh2);
+
+xh4=zeros(1024, 1);
+per=4;
+E=e4;
+ak=a4;
+for i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh4(i+1) = E/(abs(ex*ak')).^2;
+end
+xh4 = sqrt(xh4);
+
+xh6=zeros(1024, 1);
+per=6;
+E=e6;
+ak=a6;
+for i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh6(i+1) = E/(abs(ex*ak')).^2;
+end
+xh6 = sqrt(xh6);
+
+xh8=zeros(1024, 1);
+per=8;
+E=e8;
+ak=a8;
+for i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh8(i+1) = E/(abs(ex*ak')).^2;
+end
+xh8 = sqrt(xh8);
+
+xh10=zeros(1024, 1);
+per=10;
+E=e10;
+ak=a10;
+for i=0:1024,
+    ex = exp(-(0:per)*1i*(i/1024 * 2 * pi));
+    xh10(i+1) = E/(abs(ex(1:10)*ak')).^2;
+end
+xh10 = sqrt(xh10);
+fft_a = mag2db(abs(fft(x, 1024)));
+
+figure(1);
+plot((1:1024), [fft_a' mag2db(xh2(1:1024))  (mag2db(xh4(1:1024))) (mag2db(xh6(1:1024))) (mag2db(xh8(1:1024))) (mag2db(xh10(1:1024)))])
+legend({'Synthesized plot', 'p=2', 'p=4', 'p=6', 'p=8', 'p=10'}, 'Location', 'SouthEast')
+
+##### SOURCE END #####
+--></body></html>
